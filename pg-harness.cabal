@@ -1,10 +1,9 @@
 Name:                pg-harness
 Version:             0.1.0
-Synopsis:            RESTful PostgreSQL test harness
-Description:         RESTful PostgreSQL test harness.
-  .
-  This program is used to conveniently create temporary
-  PostgreSQL databases via a REST interface.
+Synopsis:            REST service for creating temporary PostgreSQL databases
+Description:
+  This is a REST service for conveniently creating temporary PostgreSQL
+  databases. It is intended for use from tests.
   .
   Simply install, update the configuration INI file to
   suit your setup, and run as a system service (e.g.
