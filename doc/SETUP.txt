@@ -1,0 +1,27 @@
+Database Setup:
+==============
+
+To enable the creation and (forced) dropping of databases, you'll need
+a superuser account on the database server. I recommend an account
+separate from the normal database superuser.
+
+To create the administrator user, use the command
+
+  $ createuser -d -E -i -l -P -s pg-harness
+
+as a PostgreSQL superuser. Make sure you enter a password that is NOT
+used for any other critical infrastructure since you'll need to put
+the password in the INI file. (You can change the user names here to
+anything you like, just make sure the INI file reflects any changes
+you make.)
+
+To provide access to the temporary databases, you'll also need an
+unprivileged user. This user will only have access to the temporary
+databases that are created by the harness:
+
+  $ createuser -D -E -i -l -P -S pg-harness-test
+
+Enter a password and put that password in the INI file. Only the user
+name is used during normal operation of the harness, so any problems
+with the password will only become apparent once your tests actually
+try to connect.
