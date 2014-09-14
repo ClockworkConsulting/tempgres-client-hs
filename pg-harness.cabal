@@ -27,7 +27,7 @@ Description:
   .
   __NOTE__: No attempt has been made to prevent DoS attacks, so you should __NOT__
   run this on any network facing the public Internet. It is only meant for
-  development LANs which a firewalled off.
+  development LANs which are firewalled off.
 License:             AGPL-3.0
 License-file:        doc/agpl-3.0.txt
 Author:              Bardur Arantsson
