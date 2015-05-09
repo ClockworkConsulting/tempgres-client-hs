@@ -45,7 +45,6 @@ installation, for example
 $ mkdir ~/opt/pg-harness
 $ cabal sandbox init
 $ cabal install pg-harness
-$ ln -s
 ```
 
 When the installation is done, update the `pg-harness.ini` file to
