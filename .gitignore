@@ -1,6 +1,6 @@
 /.hsenv_*
 /.hsenv
-/.cabal-sandbox
+.cabal-sandbox
 dist/
 dist_*/
 cabal.sandbox.config
