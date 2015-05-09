@@ -1,6 +1,6 @@
 {-
     pg-harness, REST service for creating temporary PostgreSQL databases.
-    Copyright (C) 2014 Bardur Arantsson
+    Copyright (C) 2014, 2015 Bardur Arantsson
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
