@@ -1,5 +1,5 @@
 Name:                pg-harness
-Version:             0.1.1
+Version:             0.1.2
 Synopsis:            REST service for creating temporary PostgreSQL databases
 Description:
   REST service for conveniently creating temporary PostgreSQL databases.
