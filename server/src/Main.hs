@@ -29,7 +29,7 @@ import qualified Database.PostgreSQL.Simple as P
 import           System.IO (stderr, hPutStrLn)
 import           System.Random (randomRIO)
 import           Web.Scotty (scotty, post, text, ScottyM, raise)
-import           Paths_pg_harness (getDataFileName)
+import           Paths_pg_harness_server (getDataFileName)
 import           PgHarness.Mutex
 import           PgHarness.Configuration
 import           PgHarness.DatabaseId

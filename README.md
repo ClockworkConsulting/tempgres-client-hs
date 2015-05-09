@@ -26,7 +26,7 @@ will be named `temp_...`.
 ## Usage (Haskell)
 
 An easy-to-use client library for Haskell is included; see
-the [Hackage entry](http://hackage.haskell.org/package/pg-harness)
+the [Hackage entry](http://hackage.haskell.org/package/pg-harness-client)
 for documentation.
 
 ## Security Notice
