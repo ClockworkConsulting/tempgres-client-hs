@@ -9,8 +9,8 @@ Once the service is set up and running (see below), you can do a HTTP
 POST to it to create a temporary database. For example,
 
 ```
-    $ curl -d '' http://localhost:8900
-    pg-harness-test:pg-harness-pass@db:5432/temp_ba36rk6r...
+$ curl -d '' http://localhost:8900
+pg-harness-test:pg-harness-pass@db:5432/temp_ba36rk6r...
 ```
 
 The response indicates that the temporary database
@@ -42,10 +42,10 @@ The recommended installation option is to use a Cabal sandbox for
 installation, for example
 
 ```
-    $ mkdir ~/opt/pg-harness
-    $ cabal sandbox init
-    $ cabal install pg-harness
-    $ ln -s
+$ mkdir ~/opt/pg-harness
+$ cabal sandbox init
+$ cabal install pg-harness
+$ ln -s
 ```
 
 When the installation is done, update the `pg-harness.ini` file to
@@ -66,7 +66,7 @@ changes you make.
 To create the administrator user, use the command
 
 ```
-    $ createuser -d -E -i -l -P -s pg-harness
+$ createuser -d -E -i -l -P -s pg-harness
 ```
 
 as the PostgreSQL superuser. Make sure you enter a password that is
@@ -79,7 +79,7 @@ to the temporary databases that are created by the harness. To create
 the user, use the command
 
 ```
-    $ createuser -D -E -i -l -P -S pg-harness-test
+$ createuser -D -E -i -l -P -S pg-harness-test
 ```
 
 Enter a password and put that password in the configuration file. Note
