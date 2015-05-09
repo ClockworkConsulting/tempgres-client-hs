@@ -29,7 +29,7 @@ Description:
   run this on any network facing the public Internet. It is only meant for
   development LANs which are firewalled off.
 License:             AGPL-3
-License-file:        doc/agpl-3.0.txt
+License-file:        LICENSE.txt
 Author:              Bardur Arantsson
 Maintainer:          spam@scientician.net
 Copyright:           Copyright (c) 2014 Bardur Arantsson
