@@ -8,10 +8,10 @@ PostgreSQL databases. It is intended for use from tests.
 Once the service is set up and running (see below), you can do a HTTP
 POST to it to create a temporary database. For example,
 
-'''
+```
     $ curl -d '' http://localhost:8900
     pg-harness-test:pg-harness-pass@db:5432/temp_ba36rk6rqvs92wbofk55sz5k3pcl0u74x
-'''
+```
 
 The response indicates that the temporary database
 `temp_ba36rk6rqvs92wbofk55sz5k3pcl0u74x` has been created on the
