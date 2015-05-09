@@ -23,6 +23,12 @@ duration, though any temporary databases that have not been destroyed
 when the service is stopped will stay around. All temporary databases
 will be named `temp_...`.
 
+## Usage (Haskell)
+
+An easy-to-use client library for Haskell is included; see
+the [Hackage entry](http://hackage.haskell.org/package/pg-harness)
+for documentation.
+
 ## Security Notice
 
 Since `pg-harness` must be able to forcibly drop connections to the
