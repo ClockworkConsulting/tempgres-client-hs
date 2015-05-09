@@ -32,7 +32,7 @@
   Use the 'createTemporaryDatabase' function to create databases.
 
 -}
-module Data.PostgreSQL.Harness.Client
+module Database.PostgreSQL.Harness.Client
     ( ConnectionInformation(..)
     , createTemporaryDatabase
     , toConnectionString

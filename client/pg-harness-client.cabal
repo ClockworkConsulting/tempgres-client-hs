@@ -25,4 +25,4 @@ Library
   Default-language:   Haskell2010
   Ghc-options:        -Wall
   Hs-source-dirs:     src
-  Exposed-modules:    Data.PostgreSQL.Harness.Client
+  Exposed-modules:    Database.PostgreSQL.Harness.Client
