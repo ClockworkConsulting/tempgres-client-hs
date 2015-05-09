@@ -52,7 +52,7 @@ Executable pg-harness
                    , ini >= 0.2 && < 0.3
                    , postgresql-simple >= 0.4.2 && < 0.5
                    , random >= 1.0 && < 1.1
-                   , scotty >= 0.7.0 && < 0.8
+                   , scotty >= 0.7.0 && < 0.10
                    , text >= 1.1.0 && < 2
                    , transformers >= 0.4.1 && < 0.5
   Default-extensions: LambdaCase
