@@ -140,12 +140,13 @@ routes configuration = do
         -- Create the temporary database.
         lift $ mutex $ createTemporaryDatabase configuration databaseId
         -- Return a string with the username/password and database name.
-        text $ TL.pack $
-          cfgTestUser configuration ++ ":" ++ cfgTestPassword configuration ++
-          "@" ++
-          cfgHost configuration ++ ":" ++ (show $ cfgPort configuration) ++
-          "/" ++
-          (unquotedIdentifier databaseId)
+        text $ TL.unlines
+          [ TL.pack $ cfgTestUser configuration
+          , TL.pack $ cfgTestPassword configuration
+          , TL.pack $ cfgHost configuration
+          , TL.pack $ show $ cfgPort configuration
+          , TL.pack $ unquotedIdentifier databaseId
+          ]
 
 main :: IO ()
 main = do

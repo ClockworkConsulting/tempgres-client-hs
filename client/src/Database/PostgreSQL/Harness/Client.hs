@@ -63,11 +63,11 @@ createTemporaryDatabase url = do
   where
     parse :: String -> ConnectionInformation
     parse s =
-      let (userPass, (_:hostPortDatabase)) = break ((==) '@') s in
-      let (user, (_:password)) = break ((==) ':') userPass in
-      let (hostPort, (_:databaseName)) = break ((==) '/') hostPortDatabase in
-      let (host, (_:port)) = break ((==) ':') hostPort in
-        ConnectionInformation host port databaseName user password
+      case lines s of
+        [ user, password, host, port, databaseName ] ->
+            ConnectionInformation host port databaseName user password
+        _ ->
+            error $ "Invalid response from server: " ++ s
 
 -- | Convert connection information to a @libpq@ or
 -- @postgresql-simple@ compatible connection string.
