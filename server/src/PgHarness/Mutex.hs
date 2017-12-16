@@ -15,15 +15,27 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -}
-module PgHarness.Mutex ( mkMutex ) where
+module PgHarness.Mutex
+    ( Mutex
+    , mkMutex
+    , withMutex
+    ) where
 
 import Control.Exception (bracket_)
-import Control.Concurrent.QSem (newQSem, waitQSem, signalQSem)
+import Control.Concurrent.QSem (QSem, newQSem, waitQSem, signalQSem)
+
+-- Mutex type
+newtype Mutex = Mutex QSem
 
 -- Creates a mutex based on semaphores. The mutex takes the form a
 -- function which can be called with an IO action to perform that
 -- action in a critical section.
-mkMutex :: IO (IO a -> IO a)
+mkMutex :: IO Mutex
 mkMutex = do
-  mutex <- newQSem 1
-  return $ \a -> bracket_ (waitQSem mutex) (signalQSem mutex) a
+  semaphore <- newQSem 1
+  return $ Mutex semaphore
+
+-- Run a computation in a critical section.
+withMutex :: Mutex -> IO a -> IO a
+withMutex (Mutex semaphore) action =
+  bracket_ (waitQSem semaphore) (signalQSem semaphore) action

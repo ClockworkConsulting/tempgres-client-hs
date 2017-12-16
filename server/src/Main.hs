@@ -127,12 +127,8 @@ dropDatabase configuration databaseId =
     sqlDatabaseId = sqlIdentifier databaseId
 
 -- REST interface
-routes :: Configuration -> ScottyM ()
-routes configuration = do
-  -- Mutex to prevent multiple "create" requests from being
-  -- processed simultaneously; PostgreSQL cannot handle
-  -- "cloning" a template concurrently.
-  mutex <- lift $ mkMutex
+routes :: Configuration -> Mutex -> ScottyM ()
+routes configuration mutex = do
   -- Add all the routes.
   post "/" $ do
     -- Generate a name for temporary database.
@@ -141,7 +137,7 @@ routes configuration = do
         raise $ TL.pack err
       Right databaseId -> do
         -- Create the temporary database.
-        lift $ mutex $ createTemporaryDatabase configuration databaseId
+        lift $ withMutex mutex $ createTemporaryDatabase configuration databaseId
         -- Return a string with the username/password and database name.
         text $ TL.unlines
           [ TL.pack $ cfgTestUser configuration
@@ -157,6 +153,10 @@ main = do
   getDataFileName "pg-harness.ini" >>= loadConfiguration >>= \case
     Left msg -> hPutStrLn stderr msg
     Right configuration -> do
+      -- Mutex to prevent multiple "create" requests from being
+      -- processed simultaneously; PostgreSQL cannot handle
+      -- "cloning" a template concurrently.
+      mutex <- mkMutex
       -- Start the web serving thread
       putStrLn $ "Starting with configuration: " ++ show configuration
-      scotty (cfgListenPort configuration) $ routes configuration
+      scotty (cfgListenPort configuration) $ routes configuration mutex
