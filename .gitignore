@@ -1,6 +1,7 @@
 /.hsenv_*
 /.hsenv
 .cabal-sandbox
+dist-newstyle/
 dist/
 dist_*/
 cabal.sandbox.config
