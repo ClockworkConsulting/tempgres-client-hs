@@ -1,5 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-
     pg-harness, REST service for creating temporary PostgreSQL databases.
@@ -42,14 +43,14 @@ import           PgHarness.DatabaseId
 -- completes, regardless of whether it completes successfully or
 -- not (e.g. if there's an exception).
 withConnection :: Configuration -> (Connection -> IO a) -> IO a
-withConnection configuration action = bracket (P.connect connectInfo) P.close action
+withConnection Configuration{..} action = bracket (P.connect connectInfo) P.close action
   where
     connectInfo = ConnectInfo
-      { connectHost = cfgHost configuration
-      , connectPort = cfgPort configuration
-      , connectUser = cfgUser configuration
-      , connectPassword = cfgPassword configuration
-      , connectDatabase = unquotedIdentifier (cfgDatabase configuration)
+      { connectHost = cfgHost
+      , connectPort = cfgPort
+      , connectUser = cfgUser
+      , connectPassword = cfgPassword
+      , connectDatabase = unquotedIdentifier cfgDatabase
       }
 
 -- Create a random valid PostgreSQL identifier.
@@ -72,7 +73,7 @@ mkTemporaryDatabaseId = fmap mkDatabaseId $ fmap ("temp_" ++) mkRandomIdent
 
 -- Create temporary database and return its name.
 createTemporaryDatabase :: Configuration -> DatabaseId -> IO ()
-createTemporaryDatabase configuration databaseId = do
+createTemporaryDatabase configuration@Configuration{..} databaseId = do
   -- Connect to the administrative database.
   withConnection configuration $ \connection -> do
     -- Create the temporary database.
@@ -80,18 +81,18 @@ createTemporaryDatabase configuration databaseId = do
     putStrLn $ "Created temporary database: " ++ sqlDatabaseId
     -- Spawn a thread to kill the database after a certain delay.
     void $ async $ do
-      threadDelay $ (cfgDurationSeconds configuration) * 1000000
+      threadDelay $ cfgDurationSeconds * 1000000
       dropDatabase configuration databaseId
   where
     createSql = fromString $
       "CREATE DATABASE " ++ sqlDatabaseId ++
-      "  WITH TEMPLATE " ++ (sqlIdentifier $ cfgTemplateDatabase configuration) ++
-      "          OWNER \"" ++ (cfgTestUser configuration) ++ "\""
+      "  WITH TEMPLATE " ++ (sqlIdentifier cfgTemplateDatabase) ++
+      "          OWNER \"" ++ cfgTestUser ++ "\""
 
     sqlDatabaseId = sqlIdentifier databaseId
 
 dropDatabase :: Configuration -> DatabaseId -> IO ()
-dropDatabase configuration databaseId =
+dropDatabase configuration@Configuration{..} databaseId =
   -- Since this is running in a separate thread we need explicit
   -- exception handling to avoid silent exceptions.
   withAsync doDropDatabase waitCatch >>= \case
@@ -128,7 +129,7 @@ dropDatabase configuration databaseId =
 
 -- REST interface
 routes :: Configuration -> Mutex -> ScottyM ()
-routes configuration mutex = do
+routes configuration@Configuration{..} mutex = do
   -- Add all the routes.
   post "/" $ do
     -- Generate a name for temporary database.
@@ -140,10 +141,10 @@ routes configuration mutex = do
         liftIO $ withMutex mutex $ createTemporaryDatabase configuration databaseId
         -- Return a string with the username/password and database name.
         text $ TL.unlines
-          [ TL.pack $ cfgTestUser configuration
-          , TL.pack $ cfgTestPassword configuration
-          , TL.pack $ cfgHost configuration
-          , TL.pack $ show $ cfgPort configuration
+          [ TL.pack $ cfgTestUser
+          , TL.pack $ cfgTestPassword
+          , TL.pack $ cfgHost
+          , TL.pack $ show $ cfgPort
           , TL.pack $ unquotedIdentifier databaseId
           ]
 
