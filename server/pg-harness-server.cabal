@@ -31,9 +31,9 @@ Executable pg-harness
                    , ini >= 0.2 && < 0.3
                    , postgresql-simple >= 0.4.2 && < 0.5
                    , random >= 1.0 && < 1.2
-                   , scotty >= 0.7.0 && < 0.10
+                   , scotty >= 0.11.0 && < 0.12
                    , text >= 1.1.0 && < 2
-                   , transformers >= 0.4.1 && < 0.5
+                   , transformers >= 0.5 && < 0.6
   Hs-source-dirs:    src
   Default-language:  Haskell2010
   Other-modules:     Paths_pg_harness_server

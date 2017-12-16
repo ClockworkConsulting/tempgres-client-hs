@@ -24,14 +24,14 @@ import           Control.Concurrent (threadDelay)
 import           Control.Concurrent.Async (async, withAsync, waitCatch)
 import           Control.Exception (bracket)
 import           Control.Monad (void)
-import           Control.Monad.Trans.Class (lift)
+import           Control.Monad.IO.Class (liftIO)
 import           Data.String (fromString)
 import qualified Data.Text.Lazy as TL
 import           Database.PostgreSQL.Simple (Connection, ConnectInfo(..), Only(..))
 import qualified Database.PostgreSQL.Simple as P
 import           System.IO (stderr, hPutStrLn)
 import           System.Random (randomRIO)
-import           Web.Scotty (scotty, post, text, ScottyM, raise)
+import           Web.Scotty (ScottyM, scotty, post, text, raise)
 import           Paths_pg_harness_server (getDataFileName)
 import           PgHarness.Mutex
 import           PgHarness.Configuration
@@ -132,12 +132,12 @@ routes configuration mutex = do
   -- Add all the routes.
   post "/" $ do
     -- Generate a name for temporary database.
-    lift mkTemporaryDatabaseId >>= \case
+    liftIO mkTemporaryDatabaseId >>= \case
       Left err ->
         raise $ TL.pack err
       Right databaseId -> do
         -- Create the temporary database.
-        lift $ withMutex mutex $ createTemporaryDatabase configuration databaseId
+        liftIO $ withMutex mutex $ createTemporaryDatabase configuration databaseId
         -- Return a string with the username/password and database name.
         text $ TL.unlines
           [ TL.pack $ cfgTestUser configuration
