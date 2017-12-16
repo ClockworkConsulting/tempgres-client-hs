@@ -34,9 +34,6 @@ Executable pg-harness
                    , scotty >= 0.7.0 && < 0.10
                    , text >= 1.1.0 && < 2
                    , transformers >= 0.4.1 && < 0.5
-  Default-extensions: LambdaCase
-                      OverloadedStrings
-                      ScopedTypeVariables
   Hs-source-dirs:    src
   Default-language:  Haskell2010
   Other-modules:     Paths_pg_harness_server

@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-
     pg-harness, REST service for creating temporary PostgreSQL databases.
     Copyright (C) 2014, 2015 Bardur Arantsson
