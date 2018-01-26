@@ -164,6 +164,10 @@ main = do
       -- processed simultaneously; PostgreSQL cannot handle
       -- "cloning" a template concurrently.
       mutex <- mkMutex
+      -- Force immediate creation of a single temporary database; we
+      -- do this so that any configuration issues will become obvious
+      -- on startup.
+      void $ handleCreateRequest configuration mutex
       -- Start the web serving thread
       putStrLn $ "Starting with configuration: " ++ show configuration
       scotty (cfgListenPort configuration) $ routes configuration mutex
