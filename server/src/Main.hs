@@ -25,14 +25,14 @@ import           Control.Concurrent (threadDelay)
 import           Control.Concurrent.Async (async, withAsync, waitCatch)
 import           Control.Exception (bracket)
 import           Control.Monad (void)
-import           Control.Monad.IO.Class (liftIO)
+import           Control.Monad.IO.Class (MonadIO, liftIO)
 import           Data.String (fromString)
 import qualified Data.Text.Lazy as TL
 import           Database.PostgreSQL.Simple (Connection, ConnectInfo(..), Only(..))
 import qualified Database.PostgreSQL.Simple as P
 import           System.IO (stderr, hPutStrLn)
 import           System.Random (randomRIO)
-import           Web.Scotty (ScottyM, scotty, post, text, raise)
+import           Web.Scotty (ScottyM, scotty, post, text)
 import           Paths_pg_harness_server (getDataFileName)
 import           PgHarness.Mutex
 import           PgHarness.Configuration
@@ -127,26 +127,32 @@ dropDatabase configuration@Configuration{..} databaseId =
 
     sqlDatabaseId = sqlIdentifier databaseId
 
+-- Handle a create request, returns the database ID.
+handleCreateRequest :: MonadIO m => Configuration -> Mutex -> m DatabaseId
+handleCreateRequest configuration mutex = do
+  -- Generate a name for temporary database.
+  liftIO mkTemporaryDatabaseId >>= \case
+    Left err ->
+      error err -- We're generating the name ourselves, so no error
+                -- handling needed.
+    Right databaseId -> do
+      -- Create the temporary database.
+      liftIO $ withMutex mutex $ createTemporaryDatabase configuration databaseId
+      return databaseId
+
 -- REST interface
 routes :: Configuration -> Mutex -> ScottyM ()
 routes configuration@Configuration{..} mutex = do
   -- Add all the routes.
   post "/" $ do
-    -- Generate a name for temporary database.
-    liftIO mkTemporaryDatabaseId >>= \case
-      Left err ->
-        raise $ TL.pack err
-      Right databaseId -> do
-        -- Create the temporary database.
-        liftIO $ withMutex mutex $ createTemporaryDatabase configuration databaseId
-        -- Return a string with the username/password and database name.
-        text $ TL.unlines
-          [ TL.pack $ cfgTestUser
-          , TL.pack $ cfgTestPassword
-          , TL.pack $ cfgHost
-          , TL.pack $ show $ cfgPort
-          , TL.pack $ unquotedIdentifier databaseId
-          ]
+    databaseId <- handleCreateRequest configuration mutex
+    text $ TL.unlines
+      [ TL.pack $ cfgTestUser
+      , TL.pack $ cfgTestPassword
+      , TL.pack $ cfgHost
+      , TL.pack $ show $ cfgPort
+      , TL.pack $ unquotedIdentifier databaseId
+      ]
 
 main :: IO ()
 main = do
