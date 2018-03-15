@@ -30,9 +30,10 @@ import           Data.String (fromString)
 import qualified Data.Text.Lazy as TL
 import           Database.PostgreSQL.Simple (Connection, ConnectInfo(..), Only(..))
 import qualified Database.PostgreSQL.Simple as P
+import           Network.Wai.Handler.Warp (setPort, setHost, defaultSettings)
 import           System.IO (stderr, hPutStrLn)
 import           System.Random (randomRIO)
-import           Web.Scotty (ScottyM, scotty, post, text)
+import           Web.Scotty (ScottyM, Options(..), scottyOpts, post, text)
 import           Paths_pg_harness_server (getDataFileName)
 import           PgHarness.Mutex
 import           PgHarness.Configuration
@@ -160,6 +161,14 @@ main = do
   getDataFileName "pg-harness.ini" >>= loadConfiguration >>= \case
     Left msg -> hPutStrLn stderr msg
     Right configuration -> do
+      -- Build options for Warp.
+      let warpSettings =
+            setPort (cfgListenPort configuration) $
+            setHost (fromString $ cfgListenHost configuration) $
+            defaultSettings
+          options = Options { verbose = 1
+                            , settings = warpSettings
+                            }
       -- Mutex to prevent multiple "create" requests from being
       -- processed simultaneously; PostgreSQL cannot handle
       -- "cloning" a template concurrently.
@@ -170,4 +179,4 @@ main = do
       void $ handleCreateRequest configuration mutex
       -- Start the web serving thread
       putStrLn $ "Starting with configuration: " ++ show configuration
-      scotty (cfgListenPort configuration) $ routes configuration mutex
+      scottyOpts options $ routes configuration mutex

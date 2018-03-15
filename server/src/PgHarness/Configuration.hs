@@ -30,7 +30,8 @@ import           PgHarness.DatabaseId (mkDatabaseId, DatabaseId)
 
 -- Configuration for the application
 data Configuration = Configuration
-    { cfgListenPort :: Int               -- Port to listen to for REST POST requests
+    { cfgListenPort :: Int               -- Port to listen to for requests
+    , cfgListenHost :: String            -- Host/interface to listen to for requests
     , cfgUser :: String                  -- Administrator user's user name
     , cfgPassword :: String              -- Administrator user's password
     , cfgHost :: String                  -- PostgreSQL host
@@ -48,6 +49,7 @@ loadConfiguration iniFilePath = do
     Left err -> return $ Left err
     Right ini -> return $ do
       listenPort       <- readValue      rest       "listenPort" decimal ini
+      listenHost       <- lookupValue    rest       "listenHost" ini
       user             <- lookupValue    postgresql "user" ini
       password         <- lookupValue    postgresql "password" ini
       database         <- lookupDatabase postgresql "database" ini
@@ -59,6 +61,7 @@ loadConfiguration iniFilePath = do
       durationSeconds  <- readValue      postgresql "durationSeconds" decimal ini
       return $ Configuration
              { cfgListenPort = listenPort
+             , cfgListenHost = T.unpack listenHost
              , cfgUser = T.unpack user
              , cfgPassword = T.unpack password
              , cfgDatabase = database
