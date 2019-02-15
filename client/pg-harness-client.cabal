@@ -1,5 +1,5 @@
 Name:                pg-harness-client
-Version:             0.5.0
+Version:             0.6.0
 Synopsis:            Client library for pg-harness-server
 Description:
   Client library for <https://hackage.haskell.org/package/pg-harness-server pg-harness-server>
