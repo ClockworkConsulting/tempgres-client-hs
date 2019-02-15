@@ -1,5 +1,5 @@
 Name:                pg-harness-server
-Version:             0.6.0
+Version:             0.6.1
 Synopsis:            REST service for creating temporary PostgreSQL databases
 Description:
   REST service for conveniently creating temporary PostgreSQL databases
@@ -28,7 +28,7 @@ Executable pg-harness
   Ghc-options:       -Wall
   Build-depends:     base == 4.*
                    , async >= 2.0.1.5 && < 3
-                   , ini >= 0.3 && < 0.4
+                   , ini >= 0.4 && < 0.5
                    , postgresql-simple >= 0.6 && < 0.7
                    , random >= 1.0 && < 1.2
                    , scotty >= 0.11.0 && < 0.12
