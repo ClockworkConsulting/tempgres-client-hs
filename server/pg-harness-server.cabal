@@ -34,7 +34,7 @@ Executable pg-harness
                    , scotty >= 0.11.0 && < 0.12
                    , text >= 1.1.0 && < 2
                    , transformers >= 0.5 && < 0.6
-                   , warp >= 3.2 && < 3.3
+                   , warp >= 3.2 && < 3.4
   Hs-source-dirs:    src
   Default-language:  Haskell2010
   Other-modules:     Paths_pg_harness_server
