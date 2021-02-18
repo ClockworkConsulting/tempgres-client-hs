@@ -1,4 +1,0 @@
-See
-
-   client/LICENSE.txt
-   server/LICENSE.txt
