@@ -1,0 +1,40 @@
+name: pg-harness-server
+version: "0.6.2"
+synopsis: REST service for creating temporary PostgreSQL databases.
+description: >
+    REST service for conveniently creating temporary PostgreSQL databases
+    for use in tests.
+    .
+    See <https://github.com/BardurArantsson/pg-harness/blob/master/README.md README.md> for
+    detailed usage and setup instructions.
+license: AGPL-3
+license-file: LICENSE.txt
+author: Bardur Arantsson
+maintainer: bardur@scientician.net
+copyright: Copyright (c) 2014-2020 Bardur Arantsson
+category: Database Testing Web
+data-dir: data
+github: BardurArantsson/pg-harness
+
+ghc-options: -Wall
+
+dependencies:
+  - base == 4.*
+  - async >= 2.0.1.5 && < 3
+  - ini >= 0.3 && < 0.5
+  - postgresql-simple >= 0.6 && < 0.7
+  - random >= 1.0 && < 1.2
+  - scotty >= 0.12 && < 0.13
+  - text >= 1.1.0 && < 2
+  - transformers >= 0.5 && < 0.6
+  - warp >= 3.2 && < 3.4
+
+executables:
+  pg-harness:
+    source-dirs: src
+    main: Main.hs
+    other-modules:
+      - Paths_pg_harness_server
+      - PgHarness.Configuration
+      - PgHarness.Mutex
+      - PgHarness.DatabaseId

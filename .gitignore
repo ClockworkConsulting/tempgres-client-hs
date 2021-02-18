@@ -10,3 +10,4 @@ dist/
 dist_*/
 cabal.sandbox.config
 /.ghc.environment.*
+*.cabal
