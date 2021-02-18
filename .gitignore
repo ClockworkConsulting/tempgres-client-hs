@@ -1,5 +1,8 @@
 /.hsenv_*
 /.hsenv
+.idea
+*.iml
+/out
 .cabal-sandbox
 .stack-work/
 dist-newstyle/
