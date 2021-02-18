@@ -9,7 +9,7 @@ FROM alpine:3.13.0 AS bld-stage1
 # Note that the version here *MUST* match the GHC version of the
 # Stackage LTS that we're using. The build will fail, badly, if
 # that is not the case.
-ARG GHC_VERSION="8.10.3"
+ARG GHC_VERSION="8.10.4"
 # It is tempting to change this to use *_VERSION variables and interpolate those
 # into the *_URL variables, but using URLs is much robust to upstream changes.
 ARG GHCUP_URL="https://downloads.haskell.org/ghcup/0.1.12/x86_64-linux-ghcup-0.1.12"
