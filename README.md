@@ -9,14 +9,18 @@ Once the service is set up and running (see below), you can do a HTTP
 POST to it to create a temporary database. For example,
 
 ```
-$ curl -d '' http://localhost:8900
-pg-harness-test:pg-harness-pass@db:5432/temp_ba36rk6r...
+$ curl -d '' http://localhost:15432
+pg-harness-client
+pg-harness-cpass
+localhost
+15432
+temp_jm1sufkdkdyn1ekifld1nyblj8vuomjz9
 ```
 
 The response indicates that the temporary database
-`temp_ba36rk6r...` has been created on the
-database server `db` (port 5432) and made available to the user
-`pg-harness-test` using the password `pg-harness-pass`.
+`temp_jm1sufkd...` has been created on the
+database server `localhost` (port 5432) and made available to the user
+`pg-harness-test` using the password `pg-harness-cpass`.
 
 The database will automatically be destroyed after a configurable
 duration, though any temporary databases that have not been destroyed
@@ -44,50 +48,32 @@ for development LANs which are firewalled off.
 
 ## Installing the service
 
-The recommended installation option is to use a Cabal sandbox for
-installation, for example
+The recommended installation option is to use 'Docker' to build a container,
+e.g.
 
-```
-$ mkdir ~/opt/pg-harness
-$ cabal sandbox init
-$ cabal install pg-harness
+```sh
+$ ./docker/build.sh
 ```
 
-When the installation is done, update the `pg-harness.ini` file to
-suit your setup (see below).
+This runs the build, and should produce some output akin to:
 
-You can now run `pg-harness` manually from
-`./.cabal-sandbox/bin/pg-harness`, or you could configure it run as a
-system service (e.g. via systemd, upstart or similar).
-
-## Database Setup
-
-The user names in this section are just examples that'll minimize the
-number of changes you'll need to do to the `pg-harness.ini` that's
-shipped with `pg-harness`. You can change the user names here to
-anything you like, just make sure the configuration file reflects any
-changes you make.
-
-To create the administrator user, use the command
-
-```
-$ createuser -d -E -i -l -P -s pg-harness
+``` text
+ ...
+ => exporting to image
+ => => exporting layers
+ => => writing image sha256:f47ee2bb5dd2d1df6577439a421fe00383eb599193d395a96178fb2d2360cfba
+ => => naming to docker.io/library/pg-harness:latest
 ```
 
-as the PostgreSQL superuser. Make sure you enter a password that is
-**not** used for any other critical infrastructure since you'll need
-to put the password in the `pg-harness.ini` configuration file.
+To run the container "in the background", run
 
-To provide client programs with access to the temporary databases,
-you'll also need an unprivileged user. This user will only have access
-to the temporary databases that are created by the harness. To create
-the user, use the command
-
-```
-$ createuser -D -E -i -l -P -S pg-harness-test
+```sh
+$ docker run -p 15431:8080 -p 15432:5432 -d --name=pg-harness sha256:f47ee2bb5dd2d1df657743...
 ```
 
-Enter a password and put that password in the configuration file. Note
-that only the user name is used during normal operation of the
-`pg-harness` REST service, so any problems with the password will only
-become apparent once your tests actually try to connect.
+To adjust the ports (15431, 15432) you will need to set the `HTTP_PORT` and
+`PG_HARNESS_PUBLISHED_ADDRESS_PORT` environment variables when starting the
+container.
+
+You can also set other environment variables to control user names, passwords,
+etc. See the `Dockerfile` and `Configuration.hs` for details.
