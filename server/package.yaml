@@ -19,15 +19,15 @@ github: BardurArantsson/pg-harness
 ghc-options: -Wall
 
 dependencies:
-  - base == 4.*
-  - async >= 2.0.1.5 && < 3
-  - envy >= 2.1 && < 2.2
-  - postgresql-simple >= 0.6 && < 0.7
-  - random >= 1.0 && < 1.2
-  - scotty >= 0.12 && < 0.13
-  - text >= 1.1.0 && < 2
-  - transformers >= 0.5 && < 0.6
-  - warp >= 3.2 && < 3.4
+  - base
+  - async
+  - envy
+  - postgresql-simple
+  - random
+  - scotty
+  - text
+  - transformers
+  - warp
 
 executables:
   pg-harness:
