@@ -1,5 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-
     pg-harness, REST service for creating temporary PostgreSQL databases.
     Copyright (C) 2014-2020 Bardur Arantsson
@@ -17,66 +15,72 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
 module PgHarness.Configuration
     ( Configuration(..)
     , loadConfiguration
     ) where
 
-import           Data.Ini (lookupValue, readIniFile, readValue)
-import qualified Data.Text as T
-import           Data.Text.Read (decimal)
 import           Data.Word (Word16)
-import           PgHarness.DatabaseId (mkDatabaseId, DatabaseId)
+import           GHC.Generics
+import           System.Envy
+import           PgHarness.DatabaseId (unsafeMkDatabaseId, DatabaseId)
 
--- Configuration for the application
+-- | Configuration settings; read from environment variables.
+-- Implementation note: The spellings here may be a bit strange,
+-- because envy does a translation to environment variable names.
 data Configuration = Configuration
-    { cfgListenPort :: Int               -- Port to listen to for requests
-    , cfgListenHost :: String            -- Host/interface to listen to for requests
-    , cfgUser :: String                  -- Administrator user's user name
-    , cfgPassword :: String              -- Administrator user's password
-    , cfgHost :: String                  -- PostgreSQL host
-    , cfgPort :: Word16                  -- PostgreSQL port
-    , cfgDatabase :: DatabaseId          -- Database to connect to while creating temporary database
-    , cfgTestUser :: String              -- User to use as owner for the temporary database
-    , cfgTestPassword :: String          -- Password to send in reply
-    , cfgTemplateDatabase :: DatabaseId  -- Database to use as a template for the temporary database
-    , cfgDurationSeconds :: Int          -- Duration of temporary databases
-    } deriving (Show)
+    { cfgListenPort :: Int                -- Port to listen to for requests
+    , cfgListenHost :: String             -- Host/interface to listen to for requests
+    , cfgAdminUser :: String              -- Administrator user's user name
+    , cfgAdminPass :: String              -- Administrator user's password
+    , cfgPublishedAddressHost :: String   -- PostgreSQL host. The host name is returned
+                                          -- without translation in the REST interface,
+                                          -- so you'll want to use a FQDN.
+    , cfgPublishedAddressPort :: Word16   -- Port that your PostgreSQL instance is listening on.
+    , cfgDatabase :: DatabaseId           -- Database the administrator user will connect
+                                          -- to when creating/dropping databases. This
+                                          -- database MUST exist, but will NOT be modified
+                                          -- in any way.
+    , cfgDatabasePort :: Word16           -- The local port to use to connect to the database.
+    , cfgDatabaseHost :: String           -- The local host name to use to connect to the database.
+    , cfgClientUser :: String             -- User which the REST service will return for the
+                                          -- test database. The test user will be the owner
+                                          -- of all temporary databases that are created.
+    , cfgClientPass :: String             -- Password for the test user.
+    , cfgTemplateDatabase :: DatabaseId   -- Database to use as a template for the temporary database.
+                                          -- It is recommended that you use either a) an empty template,
+                                          -- or, b) a snapshot of your production schema from the last
+                                          -- production release. The latter is helpful for testing
+                                          -- any schema migrations you may have pending for the next
+                                          -- release.
+    , cfgDurationSeconds :: Int           -- Duration of temporary databases. All existing connections
+                                          -- to the temporary database will be killed and the database will
+                                          -- be dropped after this amount of time.
+    } deriving (Generic, Show)
 
-loadConfiguration :: FilePath -> IO (Either String Configuration)
-loadConfiguration iniFilePath = do
-  readIniFile iniFilePath >>= \case
-    Left err -> return $ Left err
-    Right ini -> return $ do
-      listenPort       <- readValue      rest       "listenPort" decimal ini
-      listenHost       <- lookupValue    rest       "listenHost" ini
-      user             <- lookupValue    postgresql "user" ini
-      password         <- lookupValue    postgresql "password" ini
-      database         <- lookupDatabase postgresql "database" ini
-      host             <- lookupValue    postgresql "host" ini
-      port             <- readValue      postgresql "port" decimal ini
-      testUser         <- lookupValue    postgresql "testUser" ini
-      testPassword     <- lookupValue    postgresql "testPassword" ini
-      templateDatabase <- lookupDatabase postgresql "templateDatabase" ini
-      durationSeconds  <- readValue      postgresql "durationSeconds" decimal ini
-      return $ Configuration
-             { cfgListenPort = listenPort
-             , cfgListenHost = T.unpack listenHost
-             , cfgUser = T.unpack user
-             , cfgPassword = T.unpack password
-             , cfgDatabase = database
-             , cfgHost = T.unpack host
-             , cfgPort = port
-             , cfgTestUser = T.unpack testUser
-             , cfgTestPassword = T.unpack testPassword
-             , cfgTemplateDatabase = templateDatabase
-             , cfgDurationSeconds = durationSeconds
-             }
+loadConfiguration :: IO (Either String Configuration)
+loadConfiguration = runEnv $ gFromEnvCustom option defaults
   where
-    -- Read a database name from INI file
-    lookupDatabase section key ini =
-        (fmap T.unpack $ lookupValue section key ini) >>= mkDatabaseId
+    option = defOption
+      { dropPrefixCount = 3
+      , customPrefix = "PG_HARNESS"
+      }
 
-    -- Sections in the INI file
-    postgresql = "postgresql"
-    rest = "rest"
+    defaults = Just $ Configuration
+      { cfgListenPort = 8080
+      , cfgListenHost = "*"
+      , cfgAdminUser = "pg-harness"
+      , cfgAdminPass = "pg-harness"
+      , cfgDatabase = unsafeMkDatabaseId "postgres"
+      , cfgDatabasePort = 5432
+      , cfgDatabaseHost = "localhost"
+      , cfgPublishedAddressHost = "localhost"
+      , cfgPublishedAddressPort = 5432
+      , cfgClientUser = "pg-harness-test"
+      , cfgClientPass = "pg-harness-test"
+      , cfgTemplateDatabase = unsafeMkDatabaseId "template1"
+      , cfgDurationSeconds = 300
+      }

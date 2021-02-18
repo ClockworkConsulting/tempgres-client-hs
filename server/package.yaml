@@ -21,7 +21,7 @@ ghc-options: -Wall
 dependencies:
   - base == 4.*
   - async >= 2.0.1.5 && < 3
-  - ini >= 0.3 && < 0.5
+  - envy >= 2.1 && < 2.2
   - postgresql-simple >= 0.6 && < 0.7
   - random >= 1.0 && < 1.2
   - scotty >= 0.12 && < 0.13
@@ -34,7 +34,6 @@ executables:
     source-dirs: src
     main: Main.hs
     other-modules:
-      - Paths_pg_harness_server
       - PgHarness.Configuration
       - PgHarness.Mutex
       - PgHarness.DatabaseId

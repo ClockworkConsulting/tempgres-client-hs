@@ -34,7 +34,6 @@ import           Network.Wai.Handler.Warp (setPort, setHost, defaultSettings)
 import           System.IO (stderr, hPutStrLn)
 import           System.Random (randomRIO)
 import           Web.Scotty (ScottyM, Options(..), scottyOpts, post, text)
-import           Paths_pg_harness_server (getDataFileName)
 import           PgHarness.Mutex
 import           PgHarness.Configuration
 import           PgHarness.DatabaseId
@@ -47,10 +46,10 @@ withConnection :: Configuration -> (Connection -> IO a) -> IO a
 withConnection Configuration{..} action = bracket (P.connect connectInfo) P.close action
   where
     connectInfo = ConnectInfo
-      { connectHost = cfgHost
-      , connectPort = cfgPort
-      , connectUser = cfgUser
-      , connectPassword = cfgPassword
+      { connectHost = cfgDatabaseHost
+      , connectPort = cfgDatabasePort
+      , connectUser = cfgAdminUser
+      , connectPassword = cfgAdminPass
       , connectDatabase = unquotedIdentifier cfgDatabase
       }
 
@@ -88,7 +87,7 @@ createTemporaryDatabase configuration@Configuration{..} databaseId = do
     createSql = fromString $
       "CREATE DATABASE " ++ sqlDatabaseId ++
       "  WITH TEMPLATE " ++ (sqlIdentifier cfgTemplateDatabase) ++
-      "          OWNER \"" ++ cfgTestUser ++ "\""
+      "          OWNER \"" ++ cfgClientUser ++ "\""
 
     sqlDatabaseId = sqlIdentifier databaseId
 
@@ -148,17 +147,17 @@ routes configuration@Configuration{..} mutex = do
   post "/" $ do
     databaseId <- handleCreateRequest configuration mutex
     text $ TL.unlines
-      [ TL.pack $ cfgTestUser
-      , TL.pack $ cfgTestPassword
-      , TL.pack $ cfgHost
-      , TL.pack $ show $ cfgPort
+      [ TL.pack $ cfgClientUser
+      , TL.pack $ cfgClientPass
+      , TL.pack $ cfgPublishedAddressHost
+      , TL.pack $ show $ cfgPublishedAddressPort
       , TL.pack $ unquotedIdentifier databaseId
       ]
 
 main :: IO ()
 main = do
-  -- Load configuration from file.
-  getDataFileName "pg-harness.ini" >>= loadConfiguration >>= \case
+  -- Load configuration from environment.
+  loadConfiguration >>= \case
     Left msg -> hPutStrLn stderr msg
     Right configuration -> do
       -- Build options for Warp.

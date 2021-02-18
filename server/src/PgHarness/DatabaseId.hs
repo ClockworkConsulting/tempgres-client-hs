@@ -15,16 +15,22 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -}
+{-# LANGUAGE DerivingVia #-}
 module PgHarness.DatabaseId
     ( DatabaseId
     , mkDatabaseId
     , sqlIdentifier
     , unquotedIdentifier
+    , unsafeMkDatabaseId
     ) where
+
+import Data.Either (fromRight)
+import System.Envy (Var(..))
 
 -- Newtype to prevent unsafe construction.
 newtype DatabaseId = DatabaseId String
-    deriving (Show)
+  deriving (Show)
+  deriving Var via (String)
 
 -- Create a new database identifier. This implementation is
 -- *extremely* conservative in what is accepts in the input
@@ -51,6 +57,11 @@ mkDatabaseId s = do
 
     letters = "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
     digits = "0123456789"
+
+-- Unsafe conversion from a String to a DatabaseId.
+unsafeMkDatabaseId :: String -> DatabaseId
+unsafeMkDatabaseId s =
+  fromRight (error "bad default") $ mkDatabaseId s
 
 -- Turn database identifier into an SQL identifier for the
 -- database. Will include quotes if necessary.
