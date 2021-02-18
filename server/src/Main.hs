@@ -93,7 +93,7 @@ createTemporaryDatabase configuration@Configuration{..} databaseId = do
     sqlDatabaseId = sqlIdentifier databaseId
 
 dropDatabase :: Configuration -> DatabaseId -> IO ()
-dropDatabase configuration@Configuration{..} databaseId =
+dropDatabase configuration databaseId =
   -- Since this is running in a separate thread we need explicit
   -- exception handling to avoid silent exceptions.
   withAsync doDropDatabase waitCatch >>= \case
