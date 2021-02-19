@@ -35,16 +35,8 @@ for documentation.
 
 ## Security Notice
 
-Since `pg-harness` must be able to forcibly drop connections to the
-temporary databases it creates, you'll need to set up a superuser
-account on the database server. I would recommend using a separate
-account from the normal database superuser, and I would also *highly*
-recommend using a *non-production* PostgreSQL instance.
-
-Furthermore, you should definitely **NOT** run this on any network
-facing the public Internet since no attempt has been made to prevent
-DoS attacks and the like. The `pg-harness` REST service is only meant
-for development LANs which are firewalled off.
+This service is strictly meant for use on one's own computer or on development
+LANs which are firewalled off from the public Internet.
 
 ## Installing the service
 
