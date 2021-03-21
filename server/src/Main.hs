@@ -24,7 +24,7 @@ module Main ( main ) where
 import           Control.Concurrent (threadDelay)
 import           Control.Concurrent.Async (async, withAsync, waitCatch)
 import           Control.Exception (bracket)
-import           Control.Monad (void)
+import           Control.Monad (void, replicateM)
 import           Control.Monad.IO.Class (MonadIO, liftIO)
 import           Data.String (fromString)
 import qualified Data.Text.Lazy as TL
@@ -57,7 +57,7 @@ withConnection Configuration{..} action = bracket (P.connect connectInfo) P.clos
 mkRandomIdent :: IO String
 mkRandomIdent = do
   h <- chooseElement letters
-  t <- sequence $ replicate 32 $ chooseElement lettersAndDigits
+  t <- replicateM 32 $ chooseElement lettersAndDigits
   return (h:t)
   where
     letters = "abcdefhijklmnopqrstuvwxyz"
