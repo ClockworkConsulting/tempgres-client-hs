@@ -2,7 +2,7 @@
 
 ## Server
 
-**Server implementatation has MOVED to***
+**Server implementatation has MOVED to**
 
 [tempgres-server at GitHub](https://github.com/ClockworkConsulting/tempgres-server)
 
