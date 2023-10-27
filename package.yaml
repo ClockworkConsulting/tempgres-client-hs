@@ -4,7 +4,7 @@ synopsis: Client library for Tempgres.
 description: >
   Client library for <https://github.com/ClockworkConsulting/tempgres-server Tempgres>
   for conveniently creating temporary PostgreSQL databases for use in tests.
-category: Database Testing Web
+category: "Database, Testing"
 license: BSD2
 license-file: LICENSE.txt
 author: Bardur Arantsson
