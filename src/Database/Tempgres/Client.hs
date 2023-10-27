@@ -1,5 +1,5 @@
 {-
-    Copyright (c) 2015-2020 Bardur Arantsson
+    Copyright (c) 2015-2023 Bardur Arantsson
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,20 @@
 -}
 {-|
 
-  Client library for <https://hackage.haskell.org/package/pg-harness-server pg-harness-server>.
+  Client library for <https://github.com/ClockworkConsulting/tempgres-server Tempgres>.
 
   Use the 'createTemporaryDatabase' function to create databases.
 
 -}
-module Database.PostgreSQL.Harness.Client
+module Database.Tempgres.Client
     ( ConnectionInformation(..)
     , createTemporaryDatabase
     , toConnectionString
     ) where
 
-import           Data.ByteString (ByteString)
-import qualified Data.ByteString.Char8 as B8
-import           Network.HTTP (simpleHTTP, postRequest, getResponseBody)
+import Data.ByteString (ByteString)
+import Data.ByteString.Char8 qualified as B8
+import Network.HTTP (simpleHTTP, postRequest, getResponseBody)
 
 -- | Connection information to use for connecting to a database.
 data ConnectionInformation = ConnectionInformation
@@ -52,7 +52,7 @@ data ConnectionInformation = ConnectionInformation
     }
 
 -- | Create temporary database using the given URL to a
--- running @pg-harness-server@ REST service. Returns the connection
+-- running @Tempgres@ server. Returns the connection
 -- information for connecting to the newly created temporary
 -- database.
 createTemporaryDatabase :: String -> IO ConnectionInformation
